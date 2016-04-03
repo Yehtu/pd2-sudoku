@@ -24,8 +24,7 @@ class Sudoku{
 	    int board[size];
 		void change(); 
 		bool checkUnity(int arr[]);
-		bool check(int x);
 		int next(int i);
 		int multiple();
-		int judge(int j);
+		int judge(int x);
 };

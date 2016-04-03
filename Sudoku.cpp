@@ -40,8 +40,8 @@ void Sudoku::changeRow(int a, int b){
 	c = a-b;
 	for( i = 27*a ; i < 27*a+27 ; ++i ){
 		temp = board[i];
-		board[i] = board[i - 27*c];
-		board[i - 27*c] = temp;}
+		board[i] = board[i-27*c];
+		board[i-27*c] = temp;}
 }
 
 void Sudoku::changeCol(int a, int b){
@@ -135,20 +135,6 @@ bool Sudoku::checkUnity(int arr[]){
 	return true;
 }
 
-/*bool Sudoku::checkRow(){
-	int unity[9];   //counters
-	int i,j;
-	for( i = 0 ; i < 9 ; ++i )
-		 unity[i] = 0;   // initialize
-	for( i = 0 ; i < 9 ; i+=9 ){
-		for( j = 0 ; j < 9 ; ++j){
-		if( board[i+j] != 0 )
-			++unity[board[i+j]-1];
-		if(unity[i] > 1)
-			return false;}	}
-	return true;
-}*/
-
 bool Sudoku::isCorrect(){
 	bool check_result;
 	int check_arr[9];
@@ -176,7 +162,7 @@ bool Sudoku::isCorrect(){
 	return true;
 }
 
-bool Sudoku::check(int x){
+/*bool Sudoku::check(int x){
 	int i,j,r,c,lr,lc; 	
     r = x/9; 	
 	c = x%9;
@@ -193,7 +179,7 @@ bool Sudoku::check(int x){
 			if( board[x] == board[9*i+j] && x != 9*i+j )
 				return false;}	}
 	return true;
-}
+}*/
 
 int Sudoku::next(int i) {       //find the next blank to solve
 	while( i < size && board[i] != 0 )
@@ -209,10 +195,29 @@ int Sudoku::multiple(){   		//if clue < 17, there are more than one solution
 	return j;
 }
 
-int Sudoku::judge(int j){   		//find the number which is not used before
-	while( check(j) == false )
-		board[j]++;
-	return board[j];
+int Sudoku::judge(int x){   		//find the number which is not used before
+/*	while( check(x) == false )
+		board[x]++;
+	return board[x];*/
+	int i,j,r,c,lr,lc;
+	int num[10] = {0};
+	r = x/9;
+	c = x%9;
+	for( i = 0 ;i < 9 ; ++i )
+		num[board[i+9*r]]++;
+	for( i = 0 ; i < 9 ; ++i )
+		num[board[9*i+c]]++;
+	lr = r - (r%3);
+	lc = c - (c%3);
+	for( i = lr; i < lr+3; ++i ){
+		for( j = lc; j < lc+3; ++j )
+			num[board[9*i+j]]++;}
+	int tmp = board[x];
+	if(num[tmp]>3){
+		for (i=tmp+1;i<10;i++){
+			if (num[i] == 0) return i;}
+		return 10;}
+	return tmp;
 }
 
 void Sudoku::solve(){
@@ -227,11 +232,14 @@ void Sudoku::solve(){
 		cout << 1 << endl;
 		printOut();
 		return;}
-	int map[size]; 			
-	int mapidx = 0;
-	int nBlank = 81-clue; 		//numbers of blank
-	int nAns = 0;		//numbers of answer	
-	int tmp = next(0);	
+	int nBlank = 81-clue;       //numbers of blank
+	int map[nBlank];
+	int mapidx = 0;	
+	int tmp = next(0);
+	map[0] = tmp;
+	for( int j = 1 ; j < nBlank ; ++j )
+		map[j] = next(map[j-1]+1);
+	int nAns = 0;		//numbers of answer		
 	int ans[81];
 	do{
 		board[tmp]++;
@@ -242,19 +250,16 @@ void Sudoku::solve(){
 				tmp = -1;
 			else
 				tmp = map[--mapidx];}	
-		else{			
-				map[mapidx++] = tmp;
-				tmp = next(tmp);
-				if( mapidx == nBlank ){
-					nAns++;
-					for( int i = 0 ; i < 81 ; ++i )
-						ans[i] = board[i];
-					if( mapidx <= 0 ) 
-						tmp = -1;
-					else
-						tmp = map[--mapidx];}
-			}	
-	}while( tmp >= 0 && tmp < size && nAns < 2 );		
+		else{
+			mapidx++;			
+			if( mapidx == nBlank ){
+				for( int i = 0 ; i < 81 ; ++i )
+					ans[i] = board[i];
+				nAns++;
+				tmp = map[--mapidx];}
+			else
+				tmp = map[mapidx];}	
+	}while( tmp >= 0 && nAns < 2 );		
 	if( nAns == 0 )		
 		cout << 0 << endl;
 	else if( nAns > 1 )		
