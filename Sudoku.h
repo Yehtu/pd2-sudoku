@@ -26,6 +26,6 @@ class Sudoku{
 		bool checkUnity(int arr[]);
 		bool check(int x);
 		int next(int i);
-		int multiple(int j);
+		int multiple();
 		int judge(int j);
 };
