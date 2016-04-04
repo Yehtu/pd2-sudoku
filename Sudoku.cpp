@@ -162,25 +162,6 @@ bool Sudoku::isCorrect(){
 	return true;
 }
 
-/*bool Sudoku::check(int x){
-	int i,j,r,c,lr,lc; 	
-    r = x/9; 	
-	c = x%9;
-	for( i = 0 ;i < 9 ; ++i ){			//check row
-		if( board[x] == board[i+9*r] && x != i+9*r )
-			return false;}
-	for( i = 0 ; i < 9 ; ++i ){ 		//check column
-		if( board[x] == board[9*i+c] && x != 9*i+c)
-			return false;}
-	lr = r - (r%3);
-	lc = c - (c%3);
-	for( i = lr; i < lr+3; ++i ){  		//check block
-		for( j = lc; j < lc+3; ++j ){	
-			if( board[x] == board[9*i+j] && x != 9*i+j )
-				return false;}	}
-	return true;
-}*/
-
 int Sudoku::next(int i) {       //find the next blank to solve
 	while( i < size && board[i] != 0 )
 		++i;
@@ -196,20 +177,17 @@ int Sudoku::multiple(){   		//if clue < 17, there are more than one solution
 }
 
 int Sudoku::judge(int x){   		//find the number which is not used before
-/*	while( check(x) == false )
-		board[x]++;
-	return board[x];*/
 	int i,j,r,c,lr,lc;
-	int num[10] = {0};
+	int num[10] = {0}; 			//consider 0
 	r = x/9;
 	c = x%9;
-	for( i = 0 ;i < 9 ; ++i )
+	for( i = 0 ;i < 9 ; ++i ) 		//count row
 		num[board[i+9*r]]++;
-	for( i = 0 ; i < 9 ; ++i )
+	for( i = 0 ; i < 9 ; ++i ) 		//count column
 		num[board[9*i+c]]++;
 	lr = r - (r%3);
 	lc = c - (c%3);
-	for( i = lr; i < lr+3; ++i ){
+	for( i = lr; i < lr+3; ++i ){ 		//count block
 		for( j = lc; j < lc+3; ++j )
 			num[board[9*i+j]]++;}
 	int tmp = board[x];
@@ -233,8 +211,8 @@ void Sudoku::solve(){
 		printOut();
 		return;}
 	int nBlank = 81-clue;       //numbers of blank
-	int map[nBlank];
-	int mapidx = 0;	
+	int map[nBlank]; 		//arr to save blank of board[]
+	int mapidx = 0;	  		//index of map[]
 	int tmp = next(0);
 	map[0] = tmp;
 	for( int j = 1 ; j < nBlank ; ++j )
